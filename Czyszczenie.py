@@ -1,29 +1,38 @@
 import pandas as pd
+#załadowanie danych
 plik = "Desktop/Projekty/Analiza_Toy_Sales/Ecommerce_data_toy_sales.xlsx"
-plik = pd.read_excel(plik)
-print(plik.dtypes)
+dane = pd.read_excel(plik)
+print(dane.dtypes)
 
-print(plik)
-print(plik.describe())
+print(dane)
+print(dane.describe())
 
-plik = plik.dropna()
-plik=plik[plik["Product_id"] != "missing"]
-plik["Product_id"] = plik["Product_id"].astype(int)
+#usuniecie duplikatów i pustych wierszy
+dane = dane.drop_duplicates()
+dane = dane.dropna()
 
-plik=plik[plik["Quantity"] >= 1]
+#usuniecie wierszy z wartością "missing" oraz zmienienie typu w kolumnie
+dane=dane[dane["Product_id"] != "missing"]
+dane["Product_id"] = dane["Product_id"].astype(int)
 
-plik["CustomerID"] = plik["CustomerID"].astype(int)
+#wybranie jedynie wierszy z poprawnymi wartościami kolumny "Quantity"
+dane=dane[dane["Quantity"] >= 1]
 
-plik["Country"] = plik["Country"].replace("UK", "United Kingdom")
+#zmiana typu kolumny "CustomerID"
+dane["CustomerID"] = dane["CustomerID"].astype(int)
 
-plik["ShippingDate"] = plik["ShippingDate"].str.replace("day", "")
-plik["ShippingDate"] = plik["ShippingDate"].str.replace(",", ".")
-plik["ShippingDate"] = plik["ShippingDate"].astype(float)
-plik["ShippingDate"] = pd.to_datetime(plik["ShippingDate"], unit='D', origin='1899-12-30')
-plik["ShippingDate"] = plik["ShippingDate"].dt.round("s")
+#Ujednolicenie "UK" oraz "United Kingdom" do "United Kingdom"
+dane["Country"] = dane["Country"].replace("UK", "United Kingdom")
 
-print(plik)
-print(plik.describe())
-print(plik.dtypes)
+#Poprawienie dat dla kolumny "ShippingDate"
+dane["ShippingDate"] = dane["ShippingDate"].str.replace("day", "")
+dane["ShippingDate"] = dane["ShippingDate"].str.replace(",", ".")
+dane["ShippingDate"] = dane["ShippingDate"].astype(float)
+dane["ShippingDate"] = pd.to_datetime(dane["ShippingDate"], unit='D', origin='1899-12-30')
+dane["ShippingDate"] = dane["ShippingDate"].dt.round("s")
 
-plik.to_excel("Desktop/Projekty/Analiza_Toy_Sales/Clean_Ecommerce_data_toy_sales.xlsx", index=False)
+print(dane)
+print(dane.describe())
+print(dane.dtypes)
+
+dane.to_excel("Desktop/Projekty/Analiza_Toy_Sales/Clean_Ecommerce_data_toy_sales.xlsx", index=False)
