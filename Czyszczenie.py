@@ -11,6 +11,10 @@ print(dane.describe())
 dane = dane.drop_duplicates()
 dane = dane.dropna()
 
+#Usuniecie niepotrzebnych znaków oraz zmiana typu InvoiceNo 
+dane["InvoiceNo"] = dane["InvoiceNo"].str.replace(r'[a-zA-Z]', '', regex=True)
+dane["InvoiceNo"] = dane["InvoiceNo"].astype(int)
+
 #usuniecie wierszy z wartością "missing" oraz zmienienie typu w kolumnie
 dane=dane[dane["Product_id"] != "missing"]
 dane["Product_id"] = dane["Product_id"].astype(int)
@@ -35,4 +39,12 @@ print(dane)
 print(dane.describe())
 print(dane.dtypes)
 
+#Sprawdzenie co powoduje ogromny skok we wrzesniu
+wrzesien = dane[dane["InvoiceDate"].dt.month == 9]
+print(wrzesien.sort_values(by="Quantity", ascending = False))
+
+#Stworzenie zbioru bez jednego zamowienia powodujacego wielki skok we wrzesniu
+dane_dokladne = dane[dane["InvoiceNo"] != 581483 ]
+
 dane.to_excel("Desktop/Projekty/Analiza_Toy_Sales/Clean_Ecommerce_data_toy_sales.xlsx", index=False)
+dane_dokladne.to_excel("Desktop/Projekty/Analiza_Toy_Sales/Clean_bez_jednego_Ecommerce_data_toy_sales.xlsx", index=False)
